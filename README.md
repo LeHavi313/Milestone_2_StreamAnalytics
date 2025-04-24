@@ -1,74 +1,91 @@
 # Milestone 2: Stream Analytics - Real-Time Ride-Hailing Data Processing
 
-This repository contains the code and components developed for Milestone 2 of the Stream Analytics project. The project focuses on building real-time data processing pipelines using Apache Spark Streaming and Azure Event Hubs to analyze simulated ride-hailing service data.
+**Group:** [Insert Your Group Name/Number Here]
+**Repository:** LeHavi313/Milestone_2_StreamAnalytics [1]
 
-## Project Objectives
+## Project Overview
 
-*   Implement a real-time data ingestion pipeline using Azure Event Hubs as a Kafka-compatible message broker.
-*   Develop Apache Spark Structured Streaming applications to consume and process data streams from Event Hubs.
-*   Implement specific analytics use cases relevant to ride-hailing services based on the processed stream data.
-*   Store the results of the stream processing to create data at rest (e.g., in Azure Blob Storage).
-*   (Advanced Challenge) Develop a real-time dashboard to visualize insights derived from the streaming data.
+This repository contains the code developed by our group for Milestone 2 of the Stream Analytics course. The project implements a real-time data pipeline simulating a ride-hailing service. Data is generated, sent to Azure Event Hubs, processed in real-time using Apache Spark Structured Streaming, and insights are visualized on a Streamlit dashboard (Advanced Challenge). This README provides the necessary instructions to understand the project structure and execute the components.
+
+## Core Objectives Achieved
+
+*   Established a real-time data ingestion pipeline using Azure Event Hubs (configured as a Kafka endpoint).
+*   Developed a Spark Structured Streaming application (Jupyter Notebook) to consume and process ride-hailing data streams.
+*   Implemented analytics use cases relevant to ride-hailing services.
+*   Persisted processed data for potential batch analysis (data at rest).
+*   (Advanced Challenge) Created a real-time dashboard using Streamlit for visualization.
 
 ## Technologies Used
 
 *   Python
-*   Apache Spark (Structured Streaming)
+*   Apache Spark (Structured Streaming via `pyspark`)
 *   Azure Event Hubs (as Kafka endpoint)
-*   Azure Blob Storage (for data at rest)
-*   Streamlit (for real-time dashboard)
+*   Azure Storage Blob (Implicitly for data at rest, based on project spec)
+*   Streamlit
 *   Jupyter Notebooks
+*   FastAvro (for data serialization)
 
-## Repository Structure and Components [1]
+## Repository Structure [1]
 
-*   `eventhub_producer.py`: Script responsible for sending data (likely simulated ride events) to Azure Event Hubs.
-*   `ride_hailing_generator.py`: Generates simulated ride-hailing data used by the producer. (Note: Multiple versions might exist, e.g., `.cpython-3...` are compiled files).
-*   `milestone_2_Stream_Processing...` (file name likely truncated): The core Spark Structured Streaming application that connects to Azure Event Hubs, processes the incoming data stream, performs analytics, and potentially writes results to storage.
-*   `schemas.py`: Contains data schemas used for structuring the streaming data (e.g., for Spark DataFrames). (Note: Multiple versions might exist, e.g., `.cpython-3...` are compiled files).
-*   `BlobReading + Analytics spark.ip...` / `BlobReading + Analytics.ipynb`: Jupyter notebooks likely used for reading the processed data stored at rest (e.g., from Blob Storage) and performing further batch analytics or validation.
-*   `dashboard_streamlit.py`: The Streamlit application code for the real-time visualization dashboard (Advanced Challenge).
-*   `Streamlit_initiator.ipynb`: A helper notebook, possibly for setting up or launching the Streamlit dashboard environment.
-*   `city_grid.py` / `conmapita.py`: Helper Python modules, potentially for geographical calculations, grid mapping, or visualization support.
-*   `README.md`: This file.
+*   `README.md`: This explanatory file.
+*   `eventhub_producer.py`: Python script that generates simulated ride-hailing data (using `ride_hailing_generator.py`) and sends it in Avro format to the designated Azure Event Hub topic.
+*   `ride_hailing_generator.py`: Python module responsible for creating realistic simulated ride event data.
+*   `schemas.py`: Contains the Avro schema definition used for the ride-hailing data.
+*   `milestone_2_Stream_Processing_with_Kafka_an...ipynb`: The core Jupyter Notebook containing the Spark Structured Streaming logic. It connects to Azure Event Hubs, consumes the Avro data stream, performs transformations and analytics, and likely writes results (e.g., to memory, console, or potentially Blob Storage).
+*   `city_grid.py`: A utility module, likely used for spatial operations or mapping related to the analytics.
+*   `dashboard_streamlit.py`: The Python script for the Streamlit application, which visualizes the real-time analytics results.
+*   `Streamlit_initiator.ipynb`: A helper notebook potentially used for setting up or initializing components needed for the Streamlit dashboard.
 
-## Setup and Execution
+## Prerequisites for Execution
 
-1.  **Azure Event Hubs:**
-    *   Ensure your assigned Azure Event Hub Namespace is accessible.
-    *   Create the required Event Hubs (topics) within your namespace (up to 2 allowed). Determine the necessary partition count. *Do not change Namespace settings like TUs.*
-    *   Obtain the Event Hub Namespace connection string.
-2.  **Configure Spark Connection:**
-    *   Update the Spark application (`milestone_2_Stream_Processing...`) with your Azure Event Hub connection details. The configuration should resemble:
+1.  **Azure Resources:** Access to the appropriate Azure Event Hub Namespace assigned to your group (e.g., `iesstsabbadbaa-grp-XX-XX`). The necessary Event Hub topic(s) should already be created within this namespace.
+2.  **Connection Strings:** The Azure Event Hub Namespace connection string is required.
+3.  **Python Environment:** Python 3.x installed.
+
+## Execution Instructions
+
+1.  **Clone the Repository:**
+    ```
+    git clone <repository_url>
+    cd Milestone_2_StreamAnalytics
+    ```
+2.  **Install Dependencies:**
+    Open a terminal or command prompt in the project directory and install the required packages:
+    ```
+    pip install azure azure-eventhub azure-storage-blob fastavro pyspark streamlit
+    ```
+    *(Note: Ensure your environment has Java installed for PySpark compatibility.)*
+3.  **Configure Connections:**
+    *   **Crucially, update the Azure Event Hub connection string and Event Hub topic name(s)** within both:
+        *   `eventhub_producer.py`
+        *   `milestone_2_Stream_Processing_with_Kafka_an...ipynb` (specifically in the Spark session configuration and readStream options).
+    *   Refer to the original project specification document for the correct Spark `kafka.sasl.jaas.config` format using the connection string.
+4.  **Run the Data Producer:**
+    Execute the producer script to start sending simulated data to Azure Event Hubs:
+    ```
+    python eventhub_producer.py
+    ```
+    Leave this script running in its terminal.
+5.  **Run the Spark Streaming Application:**
+    *   Open the `milestone_2_Stream_Processing_with_Kafka_an...ipynb` Jupyter Notebook.
+    *   Execute the cells sequentially. This will initialize the Spark session, connect to Event Hubs, and start the streaming query processing. Observe the output within the notebook or wherever the stream sink is configured (e.g., console).
+6.  **Run the Streamlit Dashboard (Advanced Challenge):**
+    *   Open a *new* terminal in the project directory.
+    *   (Optional: If `Streamlit_initiator.ipynb` performs necessary setup, run its cells first).
+    *   Launch the Streamlit application:
         ```
-        eventhub_connection_str = "YOUR_EVENT_HUB_NAMESPACE_CONNECTION_STRING"
-        event_hub_namespace = "YOUR_EVENT_HUB_NAMESPACE_NAME"
-
-        kafka_options = {
-            "kafka.bootstrap.servers": f"{event_hub_namespace}.servicebus.windows.net:9093",
-            "subscribe": "your_eventhub_topic_name", # Replace with your topic
-            # Below settings required for Azure Event Hubs:
-            "kafka.sasl.mechanism": "PLAIN",
-            "kafka.security.protocol": "SASL_SSL",
-            "kafka.sasl.jaas.config": f'org.apache.kafka.common.security.plain.PlainLoginModule required username="$ConnectionString" password="{eventhub_connection_str}";',
-            # Optional: starting position
-            # "startingOffsets": "earliest" # or "latest"
-        }
+        streamlit run dashboard_streamlit.py
         ```
-3.  **Run the Pipeline:**
-    *   Execute the data producer (`eventhub_producer.py` or `ride_hailing_generator.py` if it includes producing logic) to start sending data to your Event Hub.
-    *   Submit/Run the Spark Structured Streaming application (`milestone_2_Stream_Processing...`).
-4.  **Visualize (Advanced Challenge):**
-    *   Run the Streamlit dashboard application: `streamlit run dashboard_streamlit.py`.
-5.  **Analyze Data at Rest:**
-    *   Use the `BlobReading + Analytics...` notebooks to analyze the output data stored by the Spark job.
+    *   Access the dashboard via the URL provided in the terminal output (usually `http://localhost:8501`).
 
-## Deliverables
+## Project Deliverables
 
-The primary deliverables for this milestone are submitted via a single `.pptx` document containing:
+The formal submission for this milestone consists of:
 
-*   **Section 1:** Real-Time Data Processing & Storage Architecture.
-*   **Section 2:** Analytics & Insights description, use cases, and Spark Streaming implementation details.
-*   **Section 3:** Team Reflection and Discussion Summary.
+1.  A single `.pptx` document detailing:
+    *   Architecture and Technologies (Section 1)
+    *   Analytics Use Cases and Spark Implementation (Section 2)
+    *   Team Reflection and Discussion Summary (Section 3)
+2.  An in-class presentation and demonstration of the working pipeline and dashboard.
 
-An in-class presentation and demonstration of the working real-time pipeline and dashboard (if attempting the advanced challenge) are also required.
-
+This repository contains the code supporting these deliverables.
